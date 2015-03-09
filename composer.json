@@ -1,0 +1,17 @@
+{
+    "name": "maxakawizard/sf-forms-date-debug",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "App\\": ["src/"]
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/form": "2.6.4",
+        "symfony/security": "2.6.4",
+        "symfony/validator": "2.6.4",
+        "silex/silex": "1.2.3"
+    }
+}
