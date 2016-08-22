@@ -8,9 +8,10 @@ date_default_timezone_set('Europe/Kiev');
 
 require_once('./vendor/autoload.php');
 
-Symfony\Component\Debug\ErrorHandler::register(E_ALL);
-
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Debug\Debug;
+
+Debug::enable();
 
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -18,21 +19,27 @@ $app['debug'] = true;
 $app->register(new Silex\Provider\FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-$app->get('/', function (Silex\Application $app, Request $request) {
-    $request->setMethod('POST');
-    $request->request->set('title', 'Title');
-    $request->request->set('dt', '2015-03-08');
+$expectedDate = '2015-03-08';
 
-    $form = $app['form.factory']->create(new \App\Form);
+$app->post('/', function (Silex\Application $app, Request $request) use ($expectedDate) {
+    /** @var \Symfony\Component\Form\Form $form */
+    $form = $app['form.factory']->create(\App\Form::class);
 
     $form->handleRequest($request);
     if ($form->isValid()) {
         $data = $form->getData();
 
-        return $data['dt']->format('Y-m-d');
+        $output = 'Expected date: ' . $expectedDate;
+        $output .= PHP_EOL . 'Actual date: ' . $data['dt']->format('Y-m-d');
+
+        return $output;
     } else {
-        return 'Form not submitted';
+        return 'Not valid: ' . (string) $form->getErrors(true, false);
     }
 });
 
-$app->run();
+$request = Request::createFromGlobals();
+$request->setMethod('POST');
+$request->request->set('dt', $expectedDate);
+
+$app->run($request);

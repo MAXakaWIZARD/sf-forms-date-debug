@@ -2,10 +2,10 @@
 namespace App;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormTypeInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
 
 class Form extends AbstractType implements FormTypeInterface
@@ -17,19 +17,11 @@ class Form extends AbstractType implements FormTypeInterface
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', 'text', [
-                'label' => 'Title',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('dt', 'date', [
+            ->add('dt', DateType::class, [
                 'label' => 'Date',
                 'widget' => 'single_text',
-                'input' => 'datetime',
                 'format' => 'yyyy-MM-dd',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new Date()
                 ]
@@ -38,25 +30,19 @@ class Form extends AbstractType implements FormTypeInterface
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            [
-                'csrf_protection' => false,
-                'allow_extra_fields' => true,
-                'attr' => [
-                    'id' => 'photoset_edit_form'
-                ]
-            ]
-        );
+        $resolver->setDefaults([
+            'csrf_protection' => false,
+        ]);
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return '';
     }
